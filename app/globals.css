@@ -1,3 +1,28 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Add custom styles for the editor */
+.ProseMirror {
+  @apply min-h-[calc(100vh-200px)] outline-none;
+}
+
+.ProseMirror p {
+  @apply my-4;
+}
+
+.ProseMirror h1 {
+  @apply text-3xl font-bold my-6;
+}
+
+.ProseMirror h2 {
+  @apply text-2xl font-bold my-5;
+}
+
+/* Add styles for the editor content area */
+.editor-content {
+  @apply max-w-[850px] mx-auto bg-white shadow-lg;
+  min-height: 1056px; /* A4 height */
+  width: 100%;
+  padding: 2rem;
+}
