@@ -20,7 +20,7 @@ import {
   Sun,
   Type
 } from 'lucide-react';
-import { exportToPDF } from './pdfExport';
+import { exportToPDF } from '@/components/pdfExport';
 
 const Editor = () => {
   const [content, setContent] = useState<string>('');

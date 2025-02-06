@@ -1,5 +1,5 @@
 {
-  "name": "writeflow",
+  "name": "scribeflow",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -8,8 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "tauri": "tauri",
-    "desktop": "tauri dev",
-    "build-desktop": "tauri build"
+    "desktop": "npm run build && tauri dev",
+    "build-desktop": "npm run build && tauri build"
   },
   "dependencies": {
     "@tauri-apps/api": "^2.2.0",
