@@ -1,107 +1,131 @@
-# SimpleWriter - Text Editor with PDF Export
+# WriteFlow
 
-A lightweight text editor application that bridges the gap between Notepad and MS Word, featuring PDF export capabilities with proper pagination support.
+A modern, lightweight text editor built as an alternative to WordPad. WriteFlow provides essential text formatting features with a clean, distraction-free interface and PDF export capabilities.
 
 ## Features
 
-- Clean, distraction-free writing interface
-- PDF export with pagination
-- Basic text formatting
-- File management (save, open, create new documents)
-- Cross-platform compatibility
+- 📝 Rich Text Editing
+  - Basic formatting (bold, italic, underline)
+  - Text alignment
+  - Clean, minimal interface
+  
+- 💾 File Management
+  - Auto-save to localStorage
+  - Save/Load HTML files
+  - Export to PDF with pagination
+  
+- 🎨 User Experience
+  - Dark/Light mode
+  - Word count & reading time
+  - Distraction-free writing environment
+  
+- 🚀 Performance
+  - Fast and responsive
+  - Lightweight
+  - No external dependencies for core functionality
 
 ## Tech Stack
 
-### Frontend
-- Electron.js (for desktop application)
-- React.js (for UI components)
-- TinyMCE or ProseMirror (for text editing)
-- Tailwind CSS (for styling)
+- Next.js 14
+- TypeScript
+- TipTap Editor
+- Tailwind CSS
+- Lucide Icons
+- jsPDF (for PDF export)
 
-### PDF Generation
-- pdfkit (for PDF creation)
-- react-pdf (for PDF preview)
+## Getting Started
 
-## Prerequisites
+### Prerequisites
 
-- Node.js (v16 or higher)
+- Node.js 18.17 or later
 - npm or yarn
-- Git
 
-## Installation
+### Installation
 
-#### Clone the repository
+1. Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/simple-writer
-cd simple-writer
+git clone https://github.com/Aditya_SP-05/writeflow.git
+cd writeflow
 ```
 
-#### Install dependencies and run the project
+2. Install dependencies and run the project
 
 ```bash
 npm install
-Start development server
+```
+
+3. tart development server
+
+```bash
 npm run dev
+```
+
+4. Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+### Building for Production
+
+```bash
+npm run build
+npm start
+```
+
+# Desktop Application
+
+To run WriteFlow as a desktop application:
+
+1. Install additional dependencies:
+
+```bash
+npm install --save-dev @tauri-apps/cli
+npm install @tauri-apps/api
+```
+
+2. Run the desktop app in development:
+
+```bash
+npm run tauri dev
+```
+
+3. Build the desktop application:
+
+```bash
+npm run tauri build
 ```
 
 ## Project Structure
 ```
-simple-writer/
-├── src/
-│ ├── main/ # Electron main process
-│ ├── renderer/ # React components
-│ ├── utils/ # Helper functions
-│ └── styles/ # CSS files
-├── public/ # Static assets
-└── build/ # Build output
+writeflow/
+├── app/
+│ ├── globals.css
+│ ├── layout.tsx
+│ └── page.tsx
+├── components/
+│ ├── Editor.tsx
+│ └── pdfExport.ts
+├── utils/
+│ └── pdfExport.ts
+├── public/
+├── tailwind.config.ts
+└── package.json
 ```
 
-## Development Workflow
 
-1. **Setup Environment**
-   - Install all prerequisites
-   - Configure development environment
-   - Set up version control
+## Key Components
 
-2. **Frontend Development**
-   - Implement text editor interface
-   - Add basic text formatting features
-   - Create file management system
-   - Design responsive UI
+### Editor.tsx
+The main editor component that handles:
+- Text formatting
+- File operations
+- Dark mode
+- Word count
+- Auto-save functionality
 
-3. **PDF Export Implementation**
-   - Integrate PDF generation library
-   - Add pagination support
-   - Implement export options
-   - Create preview functionality
-
-4. **Testing**
-   - Unit tests for core functionality
-   - Integration tests
-   - User acceptance testing
-
-## Build Commands
-
-#### Run in development mode
-```bash
-npm run dev
-```
-
-#### Build for production
-```bash
-npm run build
-```
-
-#### Package application
-```bash
-npm run package
-```
-
-#### Run tests
-```bash
-npm test
-```
+### pdfExport.ts
+Handles PDF generation with:
+- Proper pagination
+- Margin handling
+- Content formatting
 
 ## Contributing
 
@@ -117,8 +141,22 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Acknowledgments
 
-- Electron.js community
-- React.js community
-- PDF generation libraries contributors
+- [TipTap](https://tiptap.dev/) for the rich text editor
+- [Tailwind CSS](https://tailwindcss.com/) for styling
+- [Lucide](https://lucide.dev/) for icons
+- [jsPDF](https://github.com/parallax/jsPDF) for PDF generation
 
-You can copy this entire code block and save it as README.md in your project's root directory. The markdown formatting will render properly on GitHub and other platforms that support markdown. Remember to replace yourusername in the clone URL with your actual GitHub username when you set up the repository.
+## Roadmap
+
+- [ ] Cloud sync support
+- [ ] Collaborative editing
+- [ ] More export formats
+- [ ] Custom themes
+- [ ] Keyboard shortcuts
+- [ ] Spell checker
+- [ ] Find and replace
+- [ ] Table support
+
+## Support
+
+For support, please open an issue in the GitHub repository or contact the maintainers.
