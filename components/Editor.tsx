@@ -1,138 +1,71 @@
 'use client';
 
-import { useEditor, EditorContent, Editor as TiptapEditor } from '@tiptap/react';
+import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import { useState } from 'react';
+import TextAlign from '@tiptap/extension-text-align';
+import Highlight from '@tiptap/extension-highlight';
+import Underline from '@tiptap/extension-underline';
+import { useState, useEffect } from 'react';
 import { 
   Bold, 
   Italic, 
-  Type, 
-  Heading1, 
-  Heading2, 
-  List,
+  Underline as UnderlineIcon,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
   FileDown,
   Save,
-  Share2
+  FileUp,
+  Moon,
+  Sun,
+  Type
 } from 'lucide-react';
 import { exportToPDF } from './pdfExport';
 
-interface MenuBarProps {
-  editor: TiptapEditor | null;
-}
-
-const MenuBar = ({ editor }: MenuBarProps) => {
-  if (!editor) return null;
-
-  return (
-    <div className="flex flex-col border-b border-gray-200">
-      {/* Top toolbar with file operations */}
-      <div className="flex items-center gap-4 p-2 bg-gray-100 border-b border-gray-200">
-        <button
-          className="flex items-center gap-1 px-3 py-1 text-sm text-gray-700 hover:bg-gray-200 rounded"
-          title="Save"
-        >
-          <Save size={16} />
-          Save
-        </button>
-        <button
-          className="flex items-center gap-1 px-3 py-1 text-sm text-gray-700 hover:bg-gray-200 rounded"
-          title="Share"
-        >
-          <Share2 size={16} />
-          Share
-        </button>
-      </div>
-
-      {/* Formatting toolbar */}
-      <div className="p-2 bg-white flex gap-2 flex-wrap">
-        <div className="flex items-center gap-1 bg-gray-50 p-1 rounded-md">
-          <button
-            onClick={() => editor.chain().focus().toggleBold().run()}
-            disabled={!editor.can().chain().focus().toggleBold().run()}
-            className={`p-1.5 rounded-md hover:bg-gray-200 transition-colors ${
-              editor.isActive('bold') ? 'bg-gray-200 text-blue-600' : 'text-gray-600'
-            } disabled:opacity-50`}
-            title="Bold (Ctrl+B)"
-          >
-            <Bold size={16} />
-          </button>
-          <button
-            onClick={() => editor.chain().focus().toggleItalic().run()}
-            disabled={!editor.can().chain().focus().toggleItalic().run()}
-            className={`p-1.5 rounded-md hover:bg-gray-200 transition-colors ${
-              editor.isActive('italic') ? 'bg-gray-200 text-blue-600' : 'text-gray-600'
-            } disabled:opacity-50`}
-            title="Italic (Ctrl+I)"
-          >
-            <Italic size={16} />
-          </button>
-        </div>
-
-        <div className="flex items-center gap-1 bg-gray-50 p-1 rounded-md">
-          <button
-            onClick={() => editor.chain().focus().setParagraph().run()}
-            disabled={!editor.can().chain().focus().setParagraph().run()}
-            className={`p-1.5 rounded-md hover:bg-gray-200 transition-colors ${
-              editor.isActive('paragraph') ? 'bg-gray-200 text-blue-600' : 'text-gray-600'
-            } disabled:opacity-50`}
-            title="Paragraph"
-          >
-            <Type size={16} />
-          </button>
-          <button
-            onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-            disabled={!editor.can().chain().focus().toggleHeading({ level: 1 }).run()}
-            className={`p-1.5 rounded-md hover:bg-gray-200 transition-colors ${
-              editor.isActive('heading', { level: 1 }) ? 'bg-gray-200 text-blue-600' : 'text-gray-600'
-            } disabled:opacity-50`}
-            title="Heading 1"
-          >
-            <Heading1 size={16} />
-          </button>
-          <button
-            onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-            disabled={!editor.can().chain().focus().toggleHeading({ level: 2 }).run()}
-            className={`p-1.5 rounded-md hover:bg-gray-200 transition-colors ${
-              editor.isActive('heading', { level: 2 }) ? 'bg-gray-200 text-blue-600' : 'text-gray-600'
-            } disabled:opacity-50`}
-            title="Heading 2"
-          >
-            <Heading2 size={16} />
-          </button>
-        </div>
-
-        <div className="flex items-center gap-1 bg-gray-50 p-1 rounded-md">
-          <button
-            onClick={() => editor.chain().focus().toggleBulletList().run()}
-            disabled={!editor.can().chain().focus().toggleBulletList().run()}
-            className={`p-1.5 rounded-md hover:bg-gray-200 transition-colors ${
-              editor.isActive('bulletList') ? 'bg-gray-200 text-blue-600' : 'text-gray-600'
-            } disabled:opacity-50`}
-            title="Bullet List"
-          >
-            <List size={16} />
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
 const Editor = () => {
   const [content, setContent] = useState<string>('');
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [wordCount, setWordCount] = useState(0);
+  const [readingTime, setReadingTime] = useState(0);
 
   const editor = useEditor({
-    extensions: [StarterKit],
+    extensions: [
+      StarterKit,
+      TextAlign.configure({
+        types: ['heading', 'paragraph'],
+      }),
+      Highlight,
+      Underline,
+    ],
     content: '',
     onUpdate: ({ editor }) => {
-      setContent(editor.getHTML());
+      const newContent = editor.getHTML();
+      setContent(newContent);
+      
+      const text = editor.getText();
+      const words = text.trim().split(/\s+/).length;
+      setWordCount(words);
+      setReadingTime(Math.ceil(words / 200));
+      
+      localStorage.setItem('editorContent', newContent);
     },
     editorProps: {
       attributes: {
-        class: 'prose max-w-none focus:outline-none mx-auto px-8 py-6',
+        class: `prose prose-sm sm:prose lg:prose-lg xl:prose-2xl focus:outline-none px-8 py-6 ${
+          isDarkMode 
+            ? 'prose-invert prose-p:text-gray-100 prose-headings:text-gray-100' 
+            : 'prose-gray'
+        }`,
       },
     },
   });
+
+  useEffect(() => {
+    const savedContent = localStorage.getItem('editorContent');
+    if (savedContent && editor) {
+      editor.commands.setContent(savedContent);
+    }
+  }, [editor]);
 
   const handleExport = async () => {
     if (content) {
@@ -140,37 +73,214 @@ const Editor = () => {
     }
   };
 
-  return (
-    <div className="h-screen flex flex-col bg-gray-100">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-4 py-2 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <h1 className="text-xl font-semibold text-gray-800">WriteFlow</h1>
-          <span className="text-sm text-gray-500">Document</span>
-        </div>
-        <button
-          className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 
-                     transition-colors disabled:opacity-50 disabled:hover:bg-blue-600
-                     flex items-center gap-2 text-sm"
-          onClick={handleExport}
-          disabled={!content}
-        >
-          <FileDown size={16} />
-          Export PDF
-        </button>
-      </header>
+  const handleSave = () => {
+    const blob = new Blob([content], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'document.html';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
-      {/* Main editor area */}
-      <div className="flex-1 overflow-hidden">
-        <div className="h-full max-w-5xl mx-auto">
-          <div className="bg-white shadow-sm h-full border-x border-gray-200">
-            <MenuBar editor={editor} />
-            <div className="overflow-y-auto h-[calc(100vh-180px)]">
-              <EditorContent editor={editor} />
-            </div>
+  const handleLoad = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && editor) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const content = e.target?.result as string;
+        editor.commands.setContent(content);
+      };
+      reader.readAsText(file);
+    }
+  };
+
+  return (
+    <div className={`h-screen flex flex-col ${isDarkMode ? 'dark' : ''}`}>
+      <header className={`px-4 py-2 flex items-center justify-between border-b ${
+        isDarkMode 
+          ? 'bg-neutral-900 border-neutral-700 text-neutral-100' 
+          : 'bg-white border-gray-200 text-gray-800'
+      }`}>
+        <div className="flex items-center gap-4">
+          <h1 className="text-xl font-semibold">WriteFlow</h1>
+          
+          {/* Formatting toolbar */}
+          <div className={`flex items-center gap-1 rounded-lg p-1 ${
+            isDarkMode ? 'bg-neutral-800' : 'bg-gray-100'
+          }`}>
+            <button
+              onClick={() => editor?.chain().focus().toggleBold().run()}
+              className={`p-2 rounded transition-colors ${
+                editor?.isActive('bold')
+                  ? 'bg-blue-500 text-white'
+                  : isDarkMode
+                    ? 'text-neutral-100 hover:bg-neutral-700'
+                    : 'text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              <Bold size={16} />
+            </button>
+            <button
+              onClick={() => editor?.chain().focus().toggleItalic().run()}
+              className={`p-2 rounded transition-colors ${
+                editor?.isActive('italic')
+                  ? 'bg-blue-500 text-white'
+                  : isDarkMode
+                    ? 'text-neutral-100 hover:bg-neutral-700'
+                    : 'text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              <Italic size={16} />
+            </button>
+            <button
+              onClick={() => editor?.chain().focus().toggleUnderline().run()}
+              className={`p-2 rounded transition-colors ${
+                editor?.isActive('underline')
+                  ? 'bg-blue-500 text-white'
+                  : isDarkMode
+                    ? 'text-neutral-100 hover:bg-neutral-700'
+                    : 'text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              <UnderlineIcon size={16} />
+            </button>
+          </div>
+
+          {/* Alignment toolbar */}
+          <div className={`flex items-center gap-1 rounded-lg p-1 ${
+            isDarkMode ? 'bg-neutral-800' : 'bg-gray-100'
+          }`}>
+            <button
+              onClick={() => editor?.chain().focus().setTextAlign('left').run()}
+              className={`p-2 rounded transition-colors ${
+                editor?.isActive({ textAlign: 'left' })
+                  ? 'bg-blue-500 text-white'
+                  : isDarkMode
+                    ? 'text-neutral-100 hover:bg-neutral-700'
+                    : 'text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              <AlignLeft size={16} />
+            </button>
+            <button
+              onClick={() => editor?.chain().focus().setTextAlign('center').run()}
+              className={`p-2 rounded transition-colors ${
+                editor?.isActive({ textAlign: 'center' })
+                  ? 'bg-blue-500 text-white'
+                  : isDarkMode
+                    ? 'text-neutral-100 hover:bg-neutral-700'
+                    : 'text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              <AlignCenter size={16} />
+            </button>
+            <button
+              onClick={() => editor?.chain().focus().setTextAlign('right').run()}
+              className={`p-2 rounded transition-colors ${
+                editor?.isActive({ textAlign: 'right' })
+                  ? 'bg-blue-500 text-white'
+                  : isDarkMode
+                    ? 'text-neutral-100 hover:bg-neutral-700'
+                    : 'text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              <AlignRight size={16} />
+            </button>
           </div>
         </div>
-      </div>
+
+        <div className="flex items-center gap-4">
+          {/* File operations */}
+          <div className="flex items-center gap-2">
+            <input
+              type="file"
+              accept=".html,.txt"
+              onChange={handleLoad}
+              className="hidden"
+              id="file-upload"
+            />
+            <label
+              htmlFor="file-upload"
+              className={`cursor-pointer flex items-center gap-1 px-3 py-1.5 rounded transition-colors ${
+                isDarkMode
+                  ? 'text-neutral-100 hover:bg-neutral-800'
+                  : 'text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              <FileUp size={16} />
+              <span className="text-sm">Load</span>
+            </label>
+            <button
+              onClick={handleSave}
+              className={`flex items-center gap-1 px-3 py-1.5 rounded transition-colors ${
+                isDarkMode
+                  ? 'text-neutral-100 hover:bg-neutral-800'
+                  : 'text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              <Save size={16} />
+              <span className="text-sm">Save</span>
+            </button>
+            <button
+              onClick={handleExport}
+              className="bg-blue-600 text-white px-3 py-1.5 rounded hover:bg-blue-700 
+                       transition-colors disabled:opacity-50 flex items-center gap-1"
+              disabled={!content}
+            >
+              <FileDown size={16} />
+              <span className="text-sm">Export PDF</span>
+            </button>
+          </div>
+
+          <button
+            onClick={() => setIsDarkMode(!isDarkMode)}
+            className={`p-2 rounded transition-colors ${
+              isDarkMode
+                ? 'text-neutral-100 hover:bg-neutral-800'
+                : 'text-gray-700 hover:bg-gray-100'
+            }`}
+          >
+            {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
+          </button>
+        </div>
+      </header>
+
+      <main className={`flex-1 overflow-hidden ${
+        isDarkMode ? 'bg-neutral-900' : 'bg-gray-50'
+      }`}>
+        <div className="h-full max-w-4xl mx-auto">
+          <div className={`h-full shadow-lg ${
+            isDarkMode 
+              ? 'bg-neutral-800 text-gray-100' 
+              : 'bg-white text-gray-900'
+          }`}>
+            <EditorContent 
+              editor={editor} 
+              className={`${
+                isDarkMode 
+                  ? '[&_.ProseMirror]:text-gray-100' 
+                  : '[&_.ProseMirror]:text-gray-900'
+              }`}
+            />
+          </div>
+        </div>
+      </main>
+
+      <footer className={`px-4 py-2 flex items-center justify-between text-sm border-t ${
+        isDarkMode 
+          ? 'bg-neutral-900 border-neutral-700 text-neutral-300' 
+          : 'bg-white border-gray-200 text-gray-600'
+      }`}>
+        <div className="flex items-center gap-4">
+          <span className="flex items-center gap-1">
+            <Type size={14} />
+            {wordCount} words
+          </span>
+          <span>~{readingTime} min read</span>
+        </div>
+        <span>Auto-saved</span>
+      </footer>
     </div>
   );
 };

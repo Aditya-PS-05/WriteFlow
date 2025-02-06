@@ -2,27 +2,39 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Add custom styles for the editor */
-.ProseMirror {
-  @apply min-h-[calc(100vh-200px)] outline-none;
+/* Dark mode styles for the editor */
+.dark .ProseMirror {
+  color: #f3f4f6; /* text-gray-100 */
 }
 
-.ProseMirror p {
-  @apply my-4;
+.dark .ProseMirror h1,
+.dark .ProseMirror h2,
+.dark .ProseMirror h3,
+.dark .ProseMirror h4,
+.dark .ProseMirror h5,
+.dark .ProseMirror h6 {
+  color: #f3f4f6; /* text-gray-100 */
 }
 
-.ProseMirror h1 {
-  @apply text-3xl font-bold my-6;
+.dark .ProseMirror p {
+  color: #f3f4f6; /* text-gray-100 */
 }
 
-.ProseMirror h2 {
-  @apply text-2xl font-bold my-5;
+.dark .ProseMirror ul,
+.dark .ProseMirror ol {
+  color: #f3f4f6; /* text-gray-100 */
 }
 
-/* Add styles for the editor content area */
-.editor-content {
-  @apply max-w-[850px] mx-auto bg-white shadow-lg;
-  min-height: 1056px; /* A4 height */
-  width: 100%;
-  padding: 2rem;
+/* Editor placeholder */
+.ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: #9ca3af; /* text-gray-400 */
+  pointer-events: none;
+  height: 0;
+}
+
+/* Dark mode placeholder */
+.dark .ProseMirror p.is-editor-empty:first-child::before {
+  color: #6b7280; /* text-gray-500 */
 }
